@@ -1,6 +1,6 @@
 use std::ops::{Div, Sub};
 use ta_common::fixed_queue::FixedQueue;
-use ta_common::traits::Next;
+use ta_common::traits::Indicator;
 
 
 pub enum ROCType {
@@ -27,20 +27,21 @@ impl ROC {
     }
     pub fn calc(&self, input: f64) -> Option<f32> {
         let history = &self.history;
-        let out_len = history.size() as i32;
+        let size = history.size() as i32;
         let period = self.period as i32;
-        let prev_index: i32 = (out_len.sub(period)) as i32;
-        if prev_index < 0 {
-            return None;
+        let prev_index: i32 = (size-period) as i32;
+        let prev = history.at(prev_index);
+
+        match prev {
+            None=>None,
+            Some(val)=>Some(input.div(val) as f32)
         }
-        let prev = history.at(prev_index as u32);
-        let roc = input.div(prev) as f32;
-        Some(roc)
+
     }
 }
 
 
-impl Next<f64, Option<f32>> for ROC {
+impl Indicator<f64, Option<f32>> for ROC {
     fn next(&mut self, input: f64) -> Option<f32> {
         let value = self.calc(input);
         let result = match &self.result_type {
@@ -52,13 +53,17 @@ impl Next<f64, Option<f32>> for ROC {
         self.history.add(input);
         result
     }
+
+    fn reset(&mut self) {
+        self.history.clear();
+    }
 }
 
 
 #[cfg(test)]
 mod tests {
     use crate::{ROC, ROCType};
-    use ta_common::traits::Next;
+    use ta_common::traits::{ Indicator};
 
     #[test]
     fn roc_percent_works() {
