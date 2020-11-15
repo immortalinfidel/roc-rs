@@ -1,6 +1,12 @@
+#![feature(external_doc)]
 use std::ops::{Div, Sub};
 use ta_common::fixed_queue::FixedQueue;
 use ta_common::traits::Indicator;
+
+
+
+
+
 
 
 pub enum ROCType {
@@ -10,25 +16,27 @@ pub enum ROCType {
     ROC,
 }
 
+
+#[doc(include="../README.md")]
 pub struct ROC {
     history: FixedQueue<f64>,
-    period: u32,
+    price_ago: u32,
     result_type: ROCType,
 }
 
 impl ROC {
-    pub fn new(period: u32, result_type: Option<ROCType>) -> ROC {
+    pub fn new(price_ago: u32, result_type: Option<ROCType>) -> ROC {
         let result_type = result_type.unwrap_or(ROCType::ROC);
         Self {
-            history: FixedQueue::new(period),
-            period,
+            history: FixedQueue::new(price_ago),
+            price_ago,
             result_type,
         }
     }
     pub fn calc(&self, input: f64) -> Option<f32> {
         let history = &self.history;
         let size = history.size() as i32;
-        let period = self.period as i32;
+        let period = self.price_ago as i32;
         let prev_index: i32 = (size-period) as i32;
         let prev = history.at(prev_index);
 
