@@ -1,13 +1,8 @@
 #![feature(external_doc)]
+
 use std::ops::{Div, Sub};
 use ta_common::fixed_queue::FixedQueue;
 use ta_common::traits::Indicator;
-
-
-
-
-
-
 
 pub enum ROCType {
     ROCR,
@@ -17,7 +12,7 @@ pub enum ROCType {
 }
 
 
-#[doc(include="../README.md")]
+#[doc(include = "../README.md")]
 pub struct ROC {
     history: FixedQueue<f64>,
     price_ago: u32,
@@ -37,14 +32,9 @@ impl ROC {
         let history = &self.history;
         let size = history.size() as i32;
         let period = self.price_ago as i32;
-        let prev_index: i32 = (size-period) as i32;
+        let prev_index: i32 = (size - period) as i32;
         let prev = history.at(prev_index);
-
-        match prev {
-            None=>None,
-            Some(val)=>Some(input.div(val) as f32)
-        }
-
+        return prev.map(|v|input.div(v) as f32);
     }
 }
 
@@ -71,7 +61,7 @@ impl Indicator<f64, Option<f32>> for ROC {
 #[cfg(test)]
 mod tests {
     use crate::{ROC, ROCType};
-    use ta_common::traits::{ Indicator};
+    use ta_common::traits::{Indicator};
 
     #[test]
     fn roc_percent_works() {
@@ -90,6 +80,7 @@ mod tests {
         let res = roc.next(50 as f64);
         assert_eq!(Some(0.5_f32), res);
     }
+
     #[test]
     fn roc_hundred_works() {
         let mut roc = ROC::new(1, Some(ROCType::ROC100));
@@ -98,6 +89,7 @@ mod tests {
         let res = roc.next(50 as f64);
         assert_eq!(Some(50_f32), res);
     }
+
     #[test]
     fn roc_momentum_works() {
         let mut roc = ROC::new(1, Some(ROCType::ROCP));

@@ -11,7 +11,7 @@ let res = roc.next(50 as f64);
 assert_eq!(Some(-50_f32), res);
 
 ```
-## Calculation
+### Calculation
 ROCR=(Current Price/Price Prev n Ago);  
 ROCP=ROCR-1;  
 ROC100=(ROCR)*100;  
