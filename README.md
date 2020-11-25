@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/immortalinfidel/roc-rs.svg?branch=master)](https://travis-ci.com/immortalinfidel/roc-rs)
 # roc-rs
 Rate Of Change (ROC) implementation in rust
 ```
